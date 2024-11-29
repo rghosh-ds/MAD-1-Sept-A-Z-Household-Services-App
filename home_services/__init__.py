@@ -1,7 +1,6 @@
 from flask import Flask
-from flask_jwt_extended import JWTManager
 from home_services.routes import core
-from home_services.extensions import db, bcrypt
+from home_services.extensions import db, bcrypt, jwt
 from home_services.models import User, Customer, Professional, Service, ServiceRequest
 from dotenv import load_dotenv
 import os
@@ -16,7 +15,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 app.register_blueprint(core)
 db.init_app(app)
 bcrypt.init_app(app)
-jwt = JWTManager(app)
+jwt.init_app(app)
 
 with app.app_context():
     db.create_all()

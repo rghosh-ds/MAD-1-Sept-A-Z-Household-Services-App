@@ -1,11 +1,17 @@
 from flask import render_template, Blueprint, request, redirect, url_for, flash, jsonify
 from home_services.forms import LoginForm
 from home_services.models import User
-from home_services.extensions import db, bcrypt
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from home_services.extensions import db, bcrypt, blacklist, jwt
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
 import email_validator
 
 core = Blueprint('core', __name__)
+
+
+@jwt.token_in_blocklist_loader
+def check_if_token_is_revoked(jwt_header, jwt_payload):
+    jti = jwt_payload['jti']
+    return jti in blacklist
 
 
 @core.route('/', methods=["GET", "POST"])
@@ -32,3 +38,11 @@ def login():
     else:
         print("Form validation failed")
     return render_template('login.html', form=form, css_file="login.css", error_message=error_message)
+
+
+@jwt_required()
+@core.route('/logout', methods=["POST"])
+def logout():
+    jti = get_jwt()['jti']
+    blacklist.add(jti)
+    return jsonify({"message": "Successfully logged out"}), 200
