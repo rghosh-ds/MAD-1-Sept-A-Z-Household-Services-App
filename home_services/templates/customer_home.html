@@ -1,0 +1,90 @@
+{% extends "layout.html" %}
+
+{% block title %}Customer Home{% endblock %}
+
+{% block content %}
+<div class="container mt-5" style="min-height: 75vh;">
+    <h1 class="text-center mb-5">Welcome, Dear Customer!</h1>
+    <h1 class="text-center mb-5">Looking for?</h1>
+    <div class="row">
+        <div class="col-md-3">
+            <a href="{{ url_for('core.customer_home', service='AC Repair') }}" class="card-link">
+                <div class="card">
+                    <img src="{{ url_for('static', filename='service_images/ac_repair.jpg') }}" class="card-img-top" alt="AC Repair">
+                    <div class="card-body">
+                        <h5 class="card-title">AC Repair</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{{ url_for('core.customer_home', service='Salon') }}" class="card-link">
+                <div class="card">
+                    <img src="{{ url_for('static', filename='service_images/salon.jpg') }}" class="card-img-top" alt="Salon">
+                    <div class="card-body">
+                        <h5 class="card-title">Salon</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{{ url_for('core.customer_home', service='Cleaning') }}" class="card-link">
+                <div class="card">
+                    <img src="{{ url_for('static', filename='service_images/cleaning.jpg') }}" class="card-img-top" alt="Cleaning">
+                    <div class="card-body">
+                        <h5 class="card-title">Cleaning</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{{ url_for('core.customer_home', service='Electrician') }}" class="card-link">
+                <div class="card">
+                    <img src="{{ url_for('static', filename='service_images/electrician.jpg') }}" class="card-img-top" alt="Electrician">
+                    <div class="card-body">
+                        <h5 class="card-title">Electrician</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    {% if selected_service %}
+    <div class="container mt-5">
+        <h2 class="text-center">Best {{ selected_service }} Packages</h2>
+        <ul class="list-group">
+            {% for package in packages %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ package.name }}
+                <button class="btn btn-primary">Book</button>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <h2 class="mt-5">Service History</h2>
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Service Name</th>
+                <th>Professional Name</th>
+                <th>Phone Number</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for service in service_history %}
+            <tr>
+                <td>{{ service.id }}</td>
+                <td>{{ service.service.name }}</td>
+                <td>{{ service.professional.name }}</td>
+                <td>{{ service.professional.phone_number }}</td>
+                <td>{{ service.service_status }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

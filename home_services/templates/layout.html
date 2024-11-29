@@ -12,6 +12,7 @@
     {% if css_file %}
     <link rel="stylesheet" href="{{ url_for('static', filename=css_file) }}">
     {% endif %}
+    <link rel="icon" href="{{ url_for('static', filename='home_services_favicon.png') }}" type="image/x-icon">
 </head>
 <body>
         <section class="preloader">
@@ -19,24 +20,27 @@
                 <span class="sk-inner-circle"></span>
             </div>
         </section>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="{{ url_for('core.home') }}">
-        <span class="text-primary">Home</span> <span class="services">Services</span>
-    </a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="{% if is_customer() %}{{ url_for('core.customer_home') }}{% else %}{{ url_for('core.home') }}{% endif %}">
+        <span class="text-primary">Home</span> <span class="services">Services</span></a>
     <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item"><a class="nav-link" href="#">About</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">Services</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
+        <ul class="navbar-nav ml-auto">
+            {% if is_authenticated() %}
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Search</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Summary</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('core.logout') }}">Logout</a>
+                </li>
+            {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('core.login') }}">Login</a>
+                </li>
+            {% endif %}
         </ul>
-        <div class="ml-auto">
-            <a href="#" class="nav-link">
-                <i class="bi bi-person-circle" style="font-size: 1.5rem; color: #7C7C7D;"></i>
-            </a>
-        </div>
     </div>
 </nav>
 

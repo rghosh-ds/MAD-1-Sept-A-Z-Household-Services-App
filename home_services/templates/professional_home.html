@@ -1,0 +1,62 @@
+{% extends "layout.html" %}
+
+{% block title %}Professional Home{% endblock %}
+
+{% block content %}
+<div class="container mt-5" style="min-height: 75vh;">
+    <h1 class="text-center mb-5">Welcome, Service Professional!</h1>
+
+    <h2 class="mt-5">Today's Services</h2>
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Customer Name</th>
+                <th>Contact Number</th>
+                <th>Location (with PIN)</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for service in todays_services %}
+            <tr>
+                <td>{{ service.id }}</td>
+                <td>{{ service.customer.name }}</td>
+                <td>{{ service.customer.phone_number }}</td>
+                <td>{{ service.customer.address }} ({{ service.customer.pincode }})</td>
+                <td>
+                    <button class="btn btn-success">Accept</button>
+                    <button class="btn btn-danger">Reject</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2 class="mt-5">Closed Services</h2>
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Customer Name</th>
+                <th>Contact Number</th>
+                <th>Location (with PIN)</th>
+                <th>Date</th>
+                <th>Rating Received</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for service in closed_services %}
+            <tr>
+                <td>{{ service.id }}</td>
+                <td>{{ service.customer.name }}</td>
+                <td>{{ service.customer.phone_number }}</td>
+                <td>{{ service.customer.address }} ({{ service.customer.pincode }})</td>
+                <td>{{ service.date_of_completion.strftime('%Y-%m-%d') }}</td>
+                <td>{{ service.rating }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

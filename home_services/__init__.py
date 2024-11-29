@@ -3,6 +3,7 @@ from flask_migrate import Migrate
 from home_services.routes import core
 from home_services.extensions import db, bcrypt, jwt
 from home_services.models import User, Customer, Professional, Service, ServiceRequest
+from home_services.utils import is_authenticated, is_customer
 from dotenv import load_dotenv
 import os
 
@@ -19,6 +20,9 @@ db.init_app(app)
 bcrypt.init_app(app)
 jwt.init_app(app)
 migrate = Migrate(app, db)
+
+app.jinja_env.globals.update(is_authenticated=is_authenticated)
+app.jinja_env.globals.update(is_customer=is_customer)
 
 with app.app_context():
     db.create_all()
