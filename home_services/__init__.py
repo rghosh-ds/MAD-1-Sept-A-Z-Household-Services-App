@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_migrate import Migrate
 from home_services.routes import core
 from home_services.extensions import db, bcrypt, jwt
 from home_services.models import User, Customer, Professional, Service, ServiceRequest
@@ -16,6 +17,7 @@ app.register_blueprint(core)
 db.init_app(app)
 bcrypt.init_app(app)
 jwt.init_app(app)
+migrate = Migrate(app, db)
 
 with app.app_context():
     db.create_all()

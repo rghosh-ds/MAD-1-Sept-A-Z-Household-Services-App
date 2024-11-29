@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-5" style="height: 75vh;">
+    <h1 class="text-center mb-5">Sign Up</h1>
+    <div class="row justify-content-center">
+        <div class="col-lg-5 col-md-8 col-12">
+            <form method="POST" action="{{ url_for('core.register_customer') }}">
+                {{ form.hidden_tag() }}
+                <div class="form-floating mb-4">
+                    {{ form.name(class="form-control", placeholder="Full Name") }}
+                </div>
+                <div class="form-floating mb-4">
+                    {{ form.email(class="form-control", placeholder="Email address") }}
+                </div>
+                <div class="form-floating mb-4">
+                    {{ form.password(class="form-control", placeholder="Password") }}
+                </div>
+                <div class="form-floating mb-4">
+                    {{ form.confirm_password(class="form-control", placeholder="Confirm Password") }}
+                </div>
+                <div class="form-floating mb-4">
+                    {{ form.address(class="form-control", placeholder="Address") }}
+                </div>
+                <div class="form-floating mb-4">
+                    {{ form.pincode(class="form-control", placeholder="Pincode") }}
+                </div>
+                <div class="d-flex justify-content-center">
+                    <button type="submit" class="btn btn-primary btn-custom-width">Sign Up</button>
+                </div>
+                <p class="text-center mt-3">Already have an account? <a href="{{ url_for('core.login') }}">Sign In</a></p>
+            </form>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

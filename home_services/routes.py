@@ -1,6 +1,6 @@
 from flask import render_template, Blueprint, request, redirect, url_for, flash, jsonify
-from home_services.forms import LoginForm
-from home_services.models import User
+from home_services.forms import LoginForm, CustomerRegistrationForm
+from home_services.models import User, Customer
 from home_services.extensions import db, bcrypt, blacklist, jwt
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
 import email_validator
@@ -46,3 +46,29 @@ def logout():
     jti = get_jwt()['jti']
     blacklist.add(jti)
     return jsonify({"message": "Successfully logged out"}), 200
+
+
+@core.route('/register_customer', methods=["GET", "POST"])
+def register_customer():
+    form = CustomerRegistrationForm()
+    success_message = None
+    error_message = None
+    if request.method == "POST":
+        if form.validate_on_submit():
+            hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+            customer = Customer(
+                name=form.name.data,
+                email=form.email.data,
+                password_hash=hashed_password,
+                address=form.address.data,
+                pincode=form.pincode.data
+            )
+            db.session.add(customer)
+            db.session.commit()
+            success_message = 'Your account has been created! You are now able to log in'
+            return render_template('register_customer.html', form=form, css_file="register.css",
+                                   success_message=success_message)
+        else:
+            error_message = 'Registration Unsuccessful. Please check the form and try again.'
+    return render_template('register_customer.html', form=form, css_file="register.css",
+                           error_message=error_message)
