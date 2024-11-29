@@ -187,13 +187,26 @@ def admin_dashboard():
     user_id = get_jwt_identity()
     admin = Admin.query.get(user_id)
     if not admin:
-        return redirect(url_for('core.home'))
+        return redirect(url_for('core.login'))
+
+    show_search = request.args.get('search') == 'true'
+    search_by = request.args.get('search_by')
+    search_text = request.args.get('search_text')
 
     services = Service.query.all()
     professionals = Professional.query.all()
     service_requests = ServiceRequest.query.all()
+    search_results = []
 
-    return render_template('admin_dashboard.html', services=services, professionals=professionals, service_requests=service_requests)
+    if show_search and search_by and search_text:
+        if search_by == 'service_name':
+            search_results = ServiceRequest.query.join(Service).filter(Service.name.ilike(f'%{search_text}%')).all()
+        elif search_by == 'professional_name':
+            search_results = ServiceRequest.query.join(Professional).filter(Professional.name.ilike(f'%{search_text}%')).all()
+        elif search_by == 'request_status':
+            search_results = ServiceRequest.query.filter(ServiceRequest.service_status.ilike(f'%{search_text}%')).all()
+
+    return render_template('admin_dashboard.html', services=services, professionals=professionals, service_requests=service_requests, show_search=show_search, search_results=search_results)
 
 
 @core.route('/add_service', methods=["POST"])
