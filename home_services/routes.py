@@ -89,6 +89,7 @@ def register_customer():
 @core.route('/register_professional', methods=["GET", "POST"])
 def register_professional():
     form = ProfessionalRegistrationForm()
+    form.service_type.choices = [(service.name, service.name) for service in Service.query.all()]
     success_message = None
     error_message = None
     if request.method == "POST":
@@ -114,7 +115,6 @@ def register_professional():
             error_message = 'Registration Unsuccessful. Please check the form and try again.'
     return render_template('register_professional.html', form=form, css_file="register.css",
                            error_message=error_message)
-
 
 @core.route('/customer_home')
 @jwt_required(locations=["cookies"])

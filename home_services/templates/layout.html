@@ -21,28 +21,29 @@
             </div>
         </section>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="{% if is_customer() %}{{ url_for('core.customer_home') }}{% else %}{{ url_for('core.home') }}{% endif %}">
-        <span class="text-primary">Home</span> <span class="services">Services</span></a>
-    <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ml-auto">
-            {% if is_authenticated() %}
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Search</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Summary</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('core.logout') }}">Logout</a>
-                </li>
-            {% else %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('core.login') }}">Login</a>
-                </li>
-            {% endif %}
-        </ul>
-    </div>
-</nav>
+        <a class="navbar-brand" href="{% if is_customer() %}{{ url_for('core.customer_home') }}{% elif is_professional() %}{{ url_for('core.professional_home') }}{% else %}{{ url_for('core.home') }}{% endif %}">
+            <span class="text-primary">Home</span> <span class="services">Services</span>
+        </a>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                {% if is_authenticated() %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Search</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Summary</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('core.logout') }}">Logout</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('core.login') }}">Login</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
 
     <div class="container-fluid" style="margin: 0; padding: 0;">
         {% if success_message %}

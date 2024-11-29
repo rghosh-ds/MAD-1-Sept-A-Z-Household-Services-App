@@ -41,3 +41,19 @@ def is_customer():
         return False
     except Exception as e:
         print(e)
+
+
+def is_professional():
+    try:
+        from home_services.models import Professional
+        user_id = get_jwt_identity()
+        professional = Professional.query.get(user_id)
+        return professional is not None
+    except SQLAlchemyError as e:
+        print(f"Database error: {e}")
+        return False
+    except Unauthorized:
+        return False
+    except Exception as e:
+        print(e)
+        return False

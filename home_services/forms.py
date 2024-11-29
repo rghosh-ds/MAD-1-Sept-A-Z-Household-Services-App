@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from flask_wtf.file import FileField, FileAllowed
 from home_services.models import User
@@ -41,7 +41,7 @@ class ProfessionalRegistrationForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired(), validate_password])
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
-    service_type = StringField('Service Type', validators=[DataRequired()])
+    service_type = SelectField('Service Type', validators=[DataRequired()], choices=[])
     experience = StringField('Experience (in years)', validators=[DataRequired()])
     document = FileField('Attach Documents (PDF only)', validators=[DataRequired(), FileAllowed(['pdf'])])
     address = StringField('Address', validators=[DataRequired()])
