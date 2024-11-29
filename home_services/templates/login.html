@@ -3,21 +3,25 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2>Login</h2>
-    <form method="POST" action="{{ url_for('core.login') }}">
-        {{ form.hidden_tag() }}
-        <div class="form-group">
-            {{ form.email.label(class="form-label") }}
-            {{ form.email(class="form-control") }}
+<div class="container-fluid mt-5" style="height: 75vh;">
+    <h1 class="text-center mb-5">Sign In</h1>
+    <div class="row justify-content-center">
+        <div class="col-lg-5 col-md-8 col-12">
+            <form method="POST" action="{{ url_for('core.login') }}">
+                {{ form.hidden_tag() }}
+                <div class="form-floating mb-4">
+                    {{ form.email(class="form-control", placeholder="Email address") }}
+                </div>
+                <div class="form-floating mb-4">
+                    {{ form.password(class="form-control", placeholder="Password") }}
+                </div>
+                <div class="d-flex justify-content-center">
+                    <button type="submit" class="btn btn-primary btn-custom-width">Sign in</button>
+                </div>
+                <p class="text-center mt-3">Don’t have an account? <a href="#">Create One</a></p>
+                <p class="text-center text-secondary mt-2">(Register as a Professional <a href="#">Here</a>)</p>
+            </form>
         </div>
-        <div class="form-group">
-            {{ form.password.label(class="form-label") }}
-            {{ form.password(class="form-control") }}
-        </div>
-        <div class="form-group">
-            {{ form.submit(class="btn btn-primary") }}
-        </div>
-    </form>
+    </div>
 </div>
 {% endblock %}
