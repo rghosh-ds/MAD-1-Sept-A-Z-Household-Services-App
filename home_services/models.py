@@ -28,7 +28,10 @@ class Professional(User):
     id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     name = db.Column(db.String(120), nullable=False)
     service_type = db.Column(db.String(120), nullable=False)
-    experience = db.Column(db.String(120), nullable=True)
+    experience = db.Column(db.Integer, nullable=False)
+    document = db.Column(db.String(255), nullable=False)
+    address = db.Column(db.String(255), nullable=False)
+    pincode = db.Column(db.String(10), nullable=False)
 
 
 class Service(db.Model):
