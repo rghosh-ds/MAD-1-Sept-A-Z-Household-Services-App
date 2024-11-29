@@ -147,7 +147,7 @@ def customer_home():
                            packages=packages, search_results=search_results, show_search=show_search, css_file="customer_home.css")
 
 
-@core.route('/professional_home')
+@core.route('/professional_home', methods=["GET", "POST"])
 @jwt_required(locations=["cookies"])
 def professional_home():
     user_id = get_jwt_identity()
@@ -155,7 +155,26 @@ def professional_home():
     if not professional:
         return redirect(url_for('core.home'))
 
-    todays_services = ServiceRequest.query.filter_by(professional_id=user_id, service_status='Pending').all()
-    closed_services = ServiceRequest.query.filter_by(professional_id=user_id, service_status='Completed').all()
+    show_search = request.args.get('search') == 'true'
+    search_by = request.args.get('search_by')
+    search_text = request.args.get('search_text')
+    search_results = []
 
-    return render_template('professional_home.html', todays_services=todays_services, closed_services=closed_services, css_file="professional_home.css")
+    if search_by and search_text:
+        show_search = True
+        if search_by == 'date':
+            search_results = ServiceRequest.query.filter(ServiceRequest.date_of_request.like(f"%{search_text}%")).all()
+        elif search_by == 'location':
+            search_results = ServiceRequest.query.join(Customer).filter(Customer.pincode.like(f"%{search_text}%")).all()
+        elif search_by == 'customer_name':
+            search_results = ServiceRequest.query.join(Customer).filter(Customer.name.like(f"%{search_text}%")).all()
+        elif search_by == 'contact_number':
+            search_results = ServiceRequest.query.join(Customer).filter(Customer.phone_number.like(f"%{search_text}%")).all()
+        elif search_by == 'id':
+            search_results = ServiceRequest.query.filter(ServiceRequest.id.like(f"%{search_text}%")).all()
+
+    todays_services = ServiceRequest.query.filter_by(professional_id=user_id, service_status='Pending').all() if not show_search else []
+    closed_services = ServiceRequest.query.filter_by(professional_id=user_id, service_status='Completed').all() if not show_search else []
+
+    return render_template('professional_home.html', todays_services=todays_services, closed_services=closed_services,
+                           show_search=show_search, search_results=search_results, css_file="professional_home.css")
