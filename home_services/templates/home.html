@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="jumbotron jumbotron-fluid hero">
+    <div class="container text-center text-white">
+        <h1 class="display-4">Welcome to Home Services</h1>
+        <p class="lead">Connecting you with the best professionals in town.</p>
+        <a href="{{ url_for('core.login') }}" class="btn btn-primary btn-lg">Get Started</a>
+    </div>
+</div>
+{% endblock %}
