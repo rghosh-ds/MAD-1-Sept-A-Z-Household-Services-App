@@ -57,3 +57,20 @@ def is_professional():
     except Exception as e:
         print(e)
         return False
+
+
+def is_admin():
+    try:
+        from home_services.models import Admin
+        user_id = get_jwt_identity()
+        admin = Admin.query.get(user_id)
+        return admin is not None
+    except SQLAlchemyError as e:
+        print(f"Database error: {e}")
+        return False
+    except Unauthorized:
+        return False
+    except Exception as e:
+        print(e)
+        return False
+

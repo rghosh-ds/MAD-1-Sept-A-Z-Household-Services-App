@@ -7,15 +7,14 @@ from werkzeug.utils import secure_filename
 from werkzeug.exceptions import Unauthorized
 
 from home_services.forms import LoginForm, CustomerRegistrationForm, ProfessionalRegistrationForm
-from home_services.models import User, Customer, Professional, ServiceRequest, Service
-from home_services.extensions import db, bcrypt, blacklist, jwt
+from home_services.models import User, Customer, Professional, ServiceRequest, Service, Admin
+from home_services.extensions import db, bcrypt, blacklist, jwt, csrf
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
 import email_validator
 
 from home_services.utils import save_document
 
 core = Blueprint('core', __name__)
-
 
 @jwt.token_in_blocklist_loader
 def check_if_token_is_revoked(jwt_header, jwt_payload):
@@ -41,6 +40,8 @@ def login():
                 response = redirect(url_for('core.customer_home'))
             elif Professional.query.get(user.id):
                 response = redirect(url_for('core.professional_home'))
+            elif Admin.query.get(user.id):
+                response = redirect(url_for('core.admin_dashboard'))
             else:
                 return jsonify({'message': 'Login Error'}), 400
             response.set_cookie('access_token_cookie', access_token, httponly=True)
@@ -178,3 +179,43 @@ def professional_home():
 
     return render_template('professional_home.html', todays_services=todays_services, closed_services=closed_services,
                            show_search=show_search, search_results=search_results, css_file="professional_home.css")
+
+
+@core.route('/admin_dashboard', methods=["GET", "POST"])
+@jwt_required(locations=["cookies"])
+def admin_dashboard():
+    user_id = get_jwt_identity()
+    admin = Admin.query.get(user_id)
+    if not admin:
+        return redirect(url_for('core.home'))
+
+    services = Service.query.all()
+    professionals = Professional.query.all()
+    service_requests = ServiceRequest.query.all()
+
+    return render_template('admin_dashboard.html', services=services, professionals=professionals, service_requests=service_requests)
+
+
+@core.route('/add_service', methods=["POST"])
+@jwt_required(locations=["cookies"])
+def add_service():
+    user_id = get_jwt_identity()
+    admin = Admin.query.get(user_id)
+    if not admin:
+        return redirect(url_for('core.home'))
+
+    service_name = request.form.get('service_name')
+    service_description = request.form.get('service_description')
+    service_price = request.form.get('service_price')
+    service_time_required = request.form.get('service_time_required')
+
+    new_service = Service(
+        name=service_name,
+        description=service_description,
+        price=service_price,
+        time_required=service_time_required
+    )
+    db.session.add(new_service)
+    db.session.commit()
+
+    return redirect(url_for('core.admin_dashboard'))

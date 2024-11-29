@@ -1,5 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField
+from wtforms.fields.numeric import FloatField
+from wtforms.fields.simple import TextAreaField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from flask_wtf.file import FileField, FileAllowed
 from home_services.models import User
@@ -52,3 +54,5 @@ class ProfessionalRegistrationForm(FlaskForm):
         user = User.query.filter_by(email=email.data).first()
         if user:
             raise ValidationError('Email is already in use. Please choose a different one.')
+
+

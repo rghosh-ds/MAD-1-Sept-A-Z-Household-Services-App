@@ -1,9 +1,10 @@
 from flask import Flask
 from flask_migrate import Migrate
+from flask_cors import CORS
 from home_services.routes import core
-from home_services.extensions import db, bcrypt, jwt
+from home_services.extensions import db, bcrypt, jwt, csrf
 from home_services.models import User, Customer, Professional, Service, ServiceRequest, Admin
-from home_services.utils import is_authenticated, is_customer, is_professional
+from home_services.utils import is_authenticated, is_customer, is_professional, is_admin
 from dotenv import load_dotenv
 import os
 
@@ -14,12 +15,14 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY') if os.getenv('SECRET_KEY') el
 app.config['JWT_SECRET_KEY'] = app.config['SECRET_KEY']
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'uploads')
+app.config['JWT_COOKIE_CSRF_PROTECT'] = False
 
 app.register_blueprint(core)
 db.init_app(app)
 bcrypt.init_app(app)
 jwt.init_app(app)
 migrate = Migrate(app, db)
+CORS(app)
 
 
 def create_admin():
@@ -38,6 +41,7 @@ def create_admin():
 app.jinja_env.globals.update(is_authenticated=is_authenticated)
 app.jinja_env.globals.update(is_customer=is_customer)
 app.jinja_env.globals.update(is_professional=is_professional)
+app.jinja_env.globals.update(is_admin=is_admin)
 
 with app.app_context():
     db.create_all()

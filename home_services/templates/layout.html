@@ -15,20 +15,20 @@
     <link rel="icon" href="{{ url_for('static', filename='home_services_favicon.png') }}" type="image/x-icon">
 </head>
 <body>
-        <section class="preloader">
-            <div class="spinner">
-                <span class="sk-inner-circle"></span>
-            </div>
-        </section>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="{% if is_customer() %}{{ url_for('core.customer_home') }}{% elif is_professional() %}{{ url_for('core.professional_home') }}{% else %}{{ url_for('core.home') }}{% endif %}">
+    <section class="preloader">
+        <div class="spinner">
+            <span class="sk-inner-circle"></span>
+        </div>
+    </section>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="{% if is_customer() %}{{ url_for('core.customer_home') }}{% elif is_professional() %}{{ url_for('core.professional_home') }}{% elif is_admin() %}{{ url_for('core.admin_dashboard') }}{% else %}{{ url_for('core.home') }}{% endif %}">
             <span class="text-primary">Home</span> <span class="services">Services</span>
         </a>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
                 {% if is_authenticated() %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{% if is_customer() %}{{ url_for('core.customer_home', search='true') }}{% elif is_professional() %}{{ url_for('core.professional_home', search='true') }}{% endif %}">Search</a>
+                    <a class="nav-link" href="{% if is_customer() %}{{ url_for('core.customer_home', search='true') }}{% elif is_professional() %}{{ url_for('core.professional_home', search='true') }}{% elif is_admin() %}{{ url_for('core.admin_dashboard', search='true') }}{% endif %}">Search</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">Summary</a>
@@ -60,5 +60,8 @@
             <p class="text-center text-white">Home Services</p>
         </div>
     </footer>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
