@@ -55,3 +55,9 @@ class ServiceRequest(db.Model):
     service = db.relationship('Service', backref='requests')
     customer = db.relationship('Customer', backref='requests')
     professional = db.relationship('Professional', backref='requests', lazy=True)
+
+
+class Admin(User):
+    __tablename__ = 'admins'
+    id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    name = db.Column(db.String(120), nullable=False)

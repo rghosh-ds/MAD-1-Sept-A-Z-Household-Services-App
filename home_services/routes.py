@@ -116,7 +116,8 @@ def register_professional():
     return render_template('register_professional.html', form=form, css_file="register.css",
                            error_message=error_message)
 
-@core.route('/customer_home')
+
+@core.route('/customer_home', methods=["GET", "POST"])
 @jwt_required(locations=["cookies"])
 def customer_home():
     user_id = get_jwt_identity()
@@ -126,13 +127,24 @@ def customer_home():
 
     service_history = ServiceRequest.query.filter_by(customer_id=user_id).all()
     selected_service = request.args.get('service')
+    search_by = request.args.get('search_by')
+    search_text = request.args.get('search_text')
+    show_search = request.args.get('search') == 'true'
     packages = []
+    search_results = []
 
     if selected_service:
         packages = Service.query.filter(Service.name.like(f"%{selected_service}%")).all()
 
+    if search_by and search_text:
+        show_search = True
+        if search_by == 'service_name':
+            search_results = Service.query.filter(Service.name.like(f"%{search_text}%")).all()
+        elif search_by == 'pincode':
+            search_results = Service.query.filter(Service.pincode.like(f"%{search_text}%")).all()
+
     return render_template('customer_home.html', service_history=service_history, selected_service=selected_service,
-                           packages=packages, css_file="customer_home.css")
+                           packages=packages, search_results=search_results, show_search=show_search, css_file="customer_home.css")
 
 
 @core.route('/professional_home')
