@@ -57,6 +57,30 @@
     {% else %}
     <h1 class="text-center mb-5">Welcome, Service Professional!</h1>
 
+
+    {%  if ongoing_services %}
+<h2 class="mt-5">Ongoing Services</h2>
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Customer Name</th>
+                <th>Contact Email</th>
+                <th>Location (with PIN)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for service in ongoing_services %}
+            <tr>
+                <td>{{ service.id }}</td>
+                <td>{{ service.customer.name }}</td>
+                <td>{{ service.customer.email }}</td>
+                <td>{{ service.customer.address }} ({{ service.customer.pincode }})</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {%  endif  %}
     <h2 class="mt-5">Today's Services</h2>
     <table class="table table-striped mt-3">
         <thead>

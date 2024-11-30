@@ -212,6 +212,7 @@ def professional_home():
         flash('Unauthorized access.', 'danger')
         return redirect(url_for('core.login'))
 
+    ongoing_services = ServiceRequest.query.filter_by(service_status='Assigned', professional_id=professional.id).all()
     todays_services = ServiceRequest.query.filter_by(service_status='Pending').filter(
         ServiceRequest.professional_id.is_(None),
         ServiceRequest.service.has(Service.name == professional.service_type)
@@ -221,7 +222,7 @@ def professional_home():
         ServiceRequest.service_status.in_(['Completed', 'Cancelled'])
     ).all()
 
-    return render_template('professional_home.html', todays_services=todays_services, closed_services=closed_services)
+    return render_template('professional_home.html',ongoing_services=ongoing_services, todays_services=todays_services, closed_services=closed_services)
 
 
 @core.route('/admin_dashboard', methods=["GET", "POST"])
@@ -348,7 +349,7 @@ def accept_service(service_id):
         return redirect(url_for('core.professional_home'))
 
     service_request.professional_id = professional.id
-    service_request.service_status = 'Accepted'
+    service_request.service_status = 'Assigned'
     db.session.commit()
     flash('Service accepted successfully.', 'success')
     return redirect(url_for('core.professional_home'))
