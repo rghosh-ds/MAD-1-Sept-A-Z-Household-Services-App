@@ -52,6 +52,7 @@ class ServiceRequest(db.Model):
     date_of_completion = db.Column(db.DateTime, nullable=True)
     service_status = db.Column(db.String(50), nullable=False)
     remarks = db.Column(db.Text, nullable=True)
+    rating = db.Column(db.Integer, nullable=True)
 
     service = db.relationship('Service', backref='requests')
     customer = db.relationship('Customer', backref='requests')

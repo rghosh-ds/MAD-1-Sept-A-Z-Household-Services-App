@@ -1,5 +1,5 @@
 import os
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from flask import render_template, Blueprint, request, redirect, url_for, flash, jsonify, current_app, send_file
 from sqlalchemy.exc import SQLAlchemyError
@@ -353,6 +353,48 @@ def accept_service(service_id):
     db.session.commit()
     flash('Service accepted successfully.', 'success')
     return redirect(url_for('core.professional_home'))
+
+
+@core.route('/close_service/<int:service_id>', methods=["POST"])
+@jwt_required(locations=["cookies"])
+def close_service(service_id):
+    user_id = get_jwt_identity()
+    customer = Customer.query.get(user_id)
+    if not customer:
+        return redirect(url_for('core.home'))
+
+    service_request = ServiceRequest.query.get_or_404(service_id)
+    if service_request.customer_id != customer.id:
+        flash('Unauthorized access.', 'danger')
+        return redirect(url_for('core.customer_home'))
+
+    service_request.service_status = 'Completed'
+    service_request.remarks = request.form.get('remarks')
+    service_request.rating = request.form.get('rating')
+    service_request.date_of_completion = datetime.utcnow()
+    db.session.commit()
+    flash('Service closed successfully.', 'success')
+    return redirect(url_for('core.customer_home'))
+
+
+@core.route('/cancel_service/<int:service_id>', methods=["POST"])
+@jwt_required(locations=["cookies"])
+def cancel_service(service_id):
+    user_id = get_jwt_identity()
+    customer = Customer.query.get(user_id)
+    if not customer:
+        flash('Unauthorized access.', 'danger')
+        return redirect(url_for('core.customer_home'))
+
+    service_request = ServiceRequest.query.get_or_404(service_id)
+    if service_request.customer_id != customer.id:
+        flash('Unauthorized access.', 'danger')
+        return redirect(url_for('core.customer_home'))
+
+    service_request.service_status = 'Cancelled'
+    db.session.commit()
+    flash('Service cancelled successfully.', 'success')
+    return redirect(url_for('core.customer_home'))
 
 
 @core.route('/professional/<int:professional_id>/details', methods=["GET"])
