@@ -192,11 +192,15 @@ def customer_home():
         show_search = True
         if search_by == 'service_name':
             search_results = Service.query.filter(Service.name.like(f"%{search_text}%")).all()
-        elif search_by == 'pincode':
-            search_results = Service.query.filter(Service.pincode.like(f"%{search_text}%")).all()
+        elif search_by == 'price':
+            search_results = Service.query.filter(Service.price.like(f"%{search_text}%")).all()
+        elif search_by == 'description':
+            search_results = Service.query.filter(Service.description.like(f"%{search_text}%")).all()
+        elif search_by == 'time_required':
+            search_results = Service.query.filter(Service.time_required.like(f"%{search_text}%")).all()
 
     return render_template('customer_home.html', service_history=service_history, selected_service=selected_service,
-                           packages=packages, search_results=search_results, show_search=show_search, css_file="customer_home.css")
+                           packages=packages, search_results=search_results, show_search=show_search, css_file=None)
 
 
 @core.route('/professional_home', methods=["GET", "POST"])
@@ -319,6 +323,26 @@ def delete_service(service_id):
     db.session.commit()
     flash('Service deleted successfully!', 'success')
     return redirect(url_for('core.admin_dashboard'))
+
+
+@core.route('/book_service/<int:service_id>', methods=["POST"])
+@jwt_required(locations=["cookies"])
+def book_service(service_id):
+    user_id = get_jwt_identity()
+    customer = Customer.query.get(user_id)
+    if not customer:
+        return redirect(url_for('core.home'))
+
+    service = Service.query.get_or_404(service_id)
+    new_request = ServiceRequest(
+        service_id=service.id,
+        customer_id=customer.id,
+        service_status='Pending'
+    )
+    db.session.add(new_request)
+    db.session.commit()
+    flash('Service booked successfully!', 'success')
+    return redirect(url_for('core.customer_home'))
 
 
 @core.route('/professional/<int:professional_id>/details', methods=["GET"])
