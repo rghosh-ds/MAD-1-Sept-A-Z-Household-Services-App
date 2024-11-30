@@ -110,7 +110,7 @@
                 <th>ID</th>
                 <th>Service Name</th>
                 <th>Professional Name</th>
-                <th>Phone Number</th>
+                <th>Pro. Contact Email</th>
                 <th>Status</th>
             </tr>
         </thead>
@@ -120,7 +120,7 @@
                 <td>{{ service.id }}</td>
                 <td>{{ service.service.name }}</td>
                 <td>{{ service.professional.name }}</td>
-                <td>{{ service.professional.phone_number }}</td>
+                <td>{{ service.professional.email }}</td>
                 <td>{{ service.service_status }}</td>
             </tr>
             {% endfor %}
