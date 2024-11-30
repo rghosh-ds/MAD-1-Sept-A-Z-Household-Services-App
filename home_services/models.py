@@ -32,6 +32,7 @@ class Professional(User):
     document = db.Column(db.String(255), nullable=False)
     address = db.Column(db.String(255), nullable=False)
     pincode = db.Column(db.String(10), nullable=False)
+    status = db.Column(db.String(20), nullable=False, default='Pending')
 
 
 class Service(db.Model):

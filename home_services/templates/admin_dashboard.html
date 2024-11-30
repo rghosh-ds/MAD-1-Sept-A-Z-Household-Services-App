@@ -124,9 +124,11 @@
             <tr>
                 <th>ID</th>
                 <th>Name</th>
-                <th>Email</th>
-                <th>Service Type</th>
                 <th>Experience</th>
+                <th>Service Type</th>
+                <th>Details</th>
+                <th>Actions</th>
+
             </tr>
         </thead>
         <tbody>
@@ -134,9 +136,23 @@
             <tr>
                 <td>{{ professional.id }}</td>
                 <td>{{ professional.name }}</td>
-                <td>{{ professional.email }}</td>
+                <td>{{ professional.experience }} years</td>
                 <td>{{ professional.service_type }}</td>
-                <td>{{ professional.experience }}</td>
+                <td><a href="{{ url_for('core.view_professional_details', professional_id=professional.id) }}" class="btn btn-info btn-sm">View Details</a></td>
+                <td>
+                    {% if professional.status == 'Pending' %}
+                    <form action="{{ url_for('core.approve_professional', professional_id=professional.id) }}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                    </form>
+
+                    <form action="{{ url_for('core.reject_professional', professional_id=professional.id) }}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-warning btn-sm">Reject</button>
+                    </form>
+                    {% endif %}
+                    <form action="{{ url_for('core.delete_professional', professional_id=professional.id) }}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                </td>
             </tr>
             {% endfor %}
         </tbody>

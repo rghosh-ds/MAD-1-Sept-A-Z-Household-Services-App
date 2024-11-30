@@ -1,7 +1,7 @@
 import os
 from datetime import timedelta
 
-from flask import render_template, Blueprint, request, redirect, url_for, flash, jsonify
+from flask import render_template, Blueprint, request, redirect, url_for, flash, jsonify, current_app, send_file
 from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.utils import secure_filename
 from werkzeug.exceptions import Unauthorized
@@ -15,6 +15,7 @@ import email_validator
 from home_services.utils import save_document
 
 core = Blueprint('core', __name__)
+
 
 @jwt.token_in_blocklist_loader
 def check_if_token_is_revoked(jwt_header, jwt_payload):
@@ -38,14 +39,18 @@ def login():
             response = None
             if Customer.query.get(user.id):
                 response = redirect(url_for('core.customer_home'))
-            elif Professional.query.get(user.id):
-                response = redirect(url_for('core.professional_home'))
+            elif professional := Professional.query.get(user.id):
+                if professional.status == 'Pending':
+                    error_message = 'Your account is pending approval. Please contact the admin.'
+                else:
+                    response = redirect(url_for('core.professional_home'))
             elif Admin.query.get(user.id):
                 response = redirect(url_for('core.admin_dashboard'))
             else:
                 return jsonify({'message': 'Login Error'}), 400
-            response.set_cookie('access_token_cookie', access_token, httponly=True)
-            return response
+            if response:
+                response.set_cookie('access_token_cookie', access_token, httponly=True)
+                return response
         else:
             error_message = 'Login Unsuccessful. Please check email and password'
     return render_template('login.html', form=form, css_file="login.css", error_message=error_message)
@@ -105,17 +110,63 @@ def register_professional():
                 experience=form.experience.data,
                 document=document_filename,
                 address=form.address.data,
-                pincode=form.pincode.data
+                pincode=form.pincode.data,
+                status='Pending'
             )
             db.session.add(professional)
             db.session.commit()
-            success_message = 'Your account has been created! You are now able to log in'
+            success_message = 'Your registration request has been submitted. Please wait for admin approval.'
             return render_template('register_professional.html', form=form, css_file="register.css",
                                    success_message=success_message)
         else:
             error_message = 'Registration Unsuccessful. Please check the form and try again.'
     return render_template('register_professional.html', form=form, css_file="register.css",
                            error_message=error_message)
+
+
+@core.route('/approve_professional/<int:professional_id>', methods=["POST"])
+@jwt_required(locations=["cookies"])
+def approve_professional(professional_id):
+    user_id = get_jwt_identity()
+    admin = Admin.query.get(user_id)
+    if not admin:
+        return redirect(url_for('core.login'))
+
+    professional = Professional.query.get_or_404(professional_id)
+    professional.status = 'Approved'
+    db.session.commit()
+    flash('Professional approved successfully!', 'success')
+    return redirect(url_for('core.admin_dashboard'))
+
+
+@core.route('/reject_professional/<int:professional_id>', methods=["POST"])
+@jwt_required(locations=["cookies"])
+def reject_professional(professional_id):
+    user_id = get_jwt_identity()
+    admin = Admin.query.get(user_id)
+    if not admin:
+        return redirect(url_for('core.login'))
+
+    professional = Professional.query.get_or_404(professional_id)
+    professional.status = 'Rejected'
+    db.session.commit()
+    flash('Professional rejected successfully!', 'success')
+    return redirect(url_for('core.admin_dashboard'))
+
+
+@core.route('/delete_professional/<int:professional_id>', methods=["POST"])
+@jwt_required(locations=["cookies"])
+def delete_professional(professional_id):
+    user_id = get_jwt_identity()
+    admin = Admin.query.get(user_id)
+    if not admin:
+        return redirect(url_for('core.login'))
+
+    professional = Professional.query.get_or_404(professional_id)
+    db.session.delete(professional)
+    db.session.commit()
+    flash('Professional deleted successfully!', 'success')
+    return redirect(url_for('core.admin_dashboard'))
 
 
 @core.route('/customer_home', methods=["GET", "POST"])
@@ -269,3 +320,12 @@ def delete_service(service_id):
     flash('Service deleted successfully!', 'success')
     return redirect(url_for('core.admin_dashboard'))
 
+
+@core.route('/professional/<int:professional_id>/details', methods=["GET"])
+def view_professional_details(professional_id):
+    professional = Professional.query.get_or_404(professional_id)
+    document_path = os.path.join(current_app.config['UPLOAD_FOLDER'], professional.document)
+    if not os.path.exists(document_path):
+        flash('Document not found', 'danger')
+        return redirect(url_for('core.admin_dashboard'))
+    return send_file(document_path, as_attachment=False)
