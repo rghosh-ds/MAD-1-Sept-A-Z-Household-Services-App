@@ -115,7 +115,7 @@
             <tr>
                 <th>ID</th>
                 <th>Customer Name</th>
-                <th>Contact Number</th>
+                <th>Contact Email</th>
                 <th>Location (with PIN)</th>
                 <th>Date</th>
                 <th>Rating Received</th>
@@ -126,7 +126,7 @@
             <tr>
                 <td>{{ service.id }}</td>
                 <td>{{ service.customer.name }}</td>
-                <td>{{ service.customer.phone_number }}</td>
+                <td>{{ service.customer.email }}</td>
                 <td>{{ service.customer.address }} ({{ service.customer.pincode }})</td>
                 <td>{{ service.date_of_completion.strftime('%Y-%m-%d') }}</td>
                 <td>{{ service.rating }}</td>
