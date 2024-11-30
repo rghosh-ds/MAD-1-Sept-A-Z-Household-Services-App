@@ -59,8 +59,8 @@
                 <th>ID</th>
                 <th>Name</th>
                 <th>Description</th>
-                <th>Price</th>
-                <th>Time Required</th>
+                <th>Price(₹)</th>
+                <th>Time Required(hrs)</th>
             </tr>
         </thead>
         <tbody>
@@ -71,6 +71,12 @@
                 <td>{{ service.description }}</td>
                 <td>{{ service.price }}</td>
                 <td>{{ service.time_required }}</td>
+            <td>
+                    <a href="{{ url_for('core.edit_service', service_id=service.id) }}" class="btn btn-warning btn-sm">Edit</a>
+                    <form action="{{ url_for('core.delete_service', service_id=service.id) }}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
@@ -98,11 +104,11 @@
                             <textarea class="form-control" id="service-description" name="service_description" rows="3" required></textarea>
                         </div>
                         <div class="form-group">
-                            <label for="service-price">Service Price</label>
+                            <label for="service-price">Service Base Price(₹)</label>
                             <input type="number" class="form-control" id="service-price" name="service_price" required>
                         </div>
                         <div class="form-group">
-                            <label for="service-time-required">Time Required (in minutes)</label>
+                            <label for="service-time-required">Time Required (in hours)</label>
                             <input type="number" class="form-control" id="service-time-required" name="service_time_required" required>
                         </div>
                         <button type="submit" class="btn btn-primary">Add Service</button>

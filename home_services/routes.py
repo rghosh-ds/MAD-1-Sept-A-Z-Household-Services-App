@@ -232,3 +232,40 @@ def add_service():
     db.session.commit()
 
     return redirect(url_for('core.admin_dashboard'))
+
+
+@core.route('/edit_service/<int:service_id>', methods=["GET", "POST"])
+@jwt_required(locations=["cookies"])
+def edit_service(service_id):
+    user_id = get_jwt_identity()
+    admin = Admin.query.get(user_id)
+    if not admin:
+        return redirect(url_for('core.login'))
+
+    service = Service.query.get_or_404(service_id)
+    if request.method == "POST":
+        service.name = request.form.get('service_name')
+        service.description = request.form.get('service_description')
+        service.price = request.form.get('service_price')
+        service.time_required = request.form.get('service_time_required')
+        db.session.commit()
+        flash('Service updated successfully!', 'success')
+        return redirect(url_for('core.admin_dashboard'))
+
+    return render_template('edit_service.html', service=service)
+
+
+@core.route('/delete_service/<int:service_id>', methods=["POST"])
+@jwt_required(locations=["cookies"])
+def delete_service(service_id):
+    user_id = get_jwt_identity()
+    admin = Admin.query.get(user_id)
+    if not admin:
+        return redirect(url_for('core.login'))
+
+    service = Service.query.get_or_404(service_id)
+    db.session.delete(service)
+    db.session.commit()
+    flash('Service deleted successfully!', 'success')
+    return redirect(url_for('core.admin_dashboard'))
+
