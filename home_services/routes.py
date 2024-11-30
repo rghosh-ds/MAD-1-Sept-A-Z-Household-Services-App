@@ -203,37 +203,25 @@ def customer_home():
                            packages=packages, search_results=search_results, show_search=show_search, css_file=None)
 
 
-@core.route('/professional_home', methods=["GET", "POST"])
+@core.route('/professional_home', methods=["GET"])
 @jwt_required(locations=["cookies"])
 def professional_home():
-    user_id = get_jwt_identity()
-    professional = Professional.query.get(user_id)
+    current_user_id = get_jwt_identity()
+    professional = Professional.query.get(current_user_id)
     if not professional:
-        return redirect(url_for('core.home'))
+        flash('Unauthorized access.', 'danger')
+        return redirect(url_for('core.login'))
 
-    show_search = request.args.get('search') == 'true'
-    search_by = request.args.get('search_by')
-    search_text = request.args.get('search_text')
-    search_results = []
+    todays_services = ServiceRequest.query.filter_by(service_status='Pending').filter(
+        ServiceRequest.professional_id.is_(None),
+        ServiceRequest.service.has(Service.name == professional.service_type)
+    ).all()
 
-    if search_by and search_text:
-        show_search = True
-        if search_by == 'date':
-            search_results = ServiceRequest.query.filter(ServiceRequest.date_of_request.like(f"%{search_text}%")).all()
-        elif search_by == 'location':
-            search_results = ServiceRequest.query.join(Customer).filter(Customer.pincode.like(f"%{search_text}%")).all()
-        elif search_by == 'customer_name':
-            search_results = ServiceRequest.query.join(Customer).filter(Customer.name.like(f"%{search_text}%")).all()
-        elif search_by == 'contact_number':
-            search_results = ServiceRequest.query.join(Customer).filter(Customer.phone_number.like(f"%{search_text}%")).all()
-        elif search_by == 'id':
-            search_results = ServiceRequest.query.filter(ServiceRequest.id.like(f"%{search_text}%")).all()
+    closed_services = ServiceRequest.query.filter_by(professional_id=professional.id).filter(
+        ServiceRequest.service_status.in_(['Completed', 'Cancelled'])
+    ).all()
 
-    todays_services = ServiceRequest.query.filter_by(professional_id=user_id, service_status='Pending').all() if not show_search else []
-    closed_services = ServiceRequest.query.filter_by(professional_id=user_id, service_status='Completed').all() if not show_search else []
-
-    return render_template('professional_home.html', todays_services=todays_services, closed_services=closed_services,
-                           show_search=show_search, search_results=search_results, css_file="professional_home.css")
+    return render_template('professional_home.html', todays_services=todays_services, closed_services=closed_services)
 
 
 @core.route('/admin_dashboard', methods=["GET", "POST"])
@@ -343,6 +331,27 @@ def book_service(service_id):
     db.session.commit()
     flash('Service booked successfully!', 'success')
     return redirect(url_for('core.customer_home'))
+
+
+@core.route('/accept_service/<int:service_id>', methods=["POST"])
+@jwt_required(locations=["cookies"])
+def accept_service(service_id):
+    service_request = ServiceRequest.query.get_or_404(service_id)
+    if service_request.professional_id is not None:
+        flash('Service already accepted by another professional.', 'danger')
+        return redirect(url_for('core.professional_home'))
+
+    current_user_id = get_jwt_identity()
+    professional = Professional.query.get(current_user_id)
+    if not professional:
+        flash('Unauthorized access.', 'danger')
+        return redirect(url_for('core.professional_home'))
+
+    service_request.professional_id = professional.id
+    service_request.service_status = 'Accepted'
+    db.session.commit()
+    flash('Service accepted successfully.', 'success')
+    return redirect(url_for('core.professional_home'))
 
 
 @core.route('/professional/<int:professional_id>/details', methods=["GET"])

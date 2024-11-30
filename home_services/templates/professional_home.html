@@ -63,7 +63,7 @@
             <tr>
                 <th>ID</th>
                 <th>Customer Name</th>
-                <th>Contact Number</th>
+                <th>Contact Email</th>
                 <th>Location (with PIN)</th>
                 <th>Action</th>
             </tr>
@@ -73,10 +73,12 @@
             <tr>
                 <td>{{ service.id }}</td>
                 <td>{{ service.customer.name }}</td>
-                <td>{{ service.customer.phone_number }}</td>
+                <td>{{ service.customer.email }}</td>
                 <td>{{ service.customer.address }} ({{ service.customer.pincode }})</td>
                 <td>
-                    <!-- Action buttons or links here -->
+                    <form action="{{ url_for('core.accept_service', service_id=service.id) }}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-success btn-sm">Accept</button>
+                    </form>
                 </td>
             </tr>
             {% endfor %}
