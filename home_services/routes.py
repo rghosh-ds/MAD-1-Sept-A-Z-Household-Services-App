@@ -254,6 +254,32 @@ def professional_home():
     return render_template('professional_home.html',ongoing_services=ongoing_services, todays_services=todays_services, closed_services=closed_services)
 
 
+@core.route('/professional_summary', methods=["GET"])
+@jwt_required(locations=["cookies"])
+def professional_summary():
+    user_id = get_jwt_identity()
+    professional = Professional.query.get(user_id)
+    if not professional:
+        return redirect(url_for('core.home'))
+
+    reviews = ServiceRequest.query.filter_by(professional_id=user_id).with_entities(ServiceRequest.rating).all()
+    ratings = [review.rating for review in reviews if review.rating is not None]
+
+    rating_counts = [0, 0, 0, 0, 0]
+    for rating in ratings:
+        if 1 <= rating <= 5:
+            rating_counts[rating - 1] += 1
+
+    service_requests = ServiceRequest.query.filter_by(professional_id=user_id).all()
+    status_counts = {
+        'Received': len(service_requests),
+        'Completed': sum(1 for service_request in service_requests if service_request.service_status == 'Completed'),
+        'Ongoing': sum(1 for service_request in service_requests if service_request.service_status in ['Assigned', 'Pending'])
+    }
+
+    return render_template('professional_summary.html', rating_counts=rating_counts, status_counts=status_counts)
+
+
 @core.route('/admin_dashboard', methods=["GET", "POST"])
 @jwt_required(locations=["cookies"])
 def admin_dashboard():
