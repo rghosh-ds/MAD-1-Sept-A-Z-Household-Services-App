@@ -10,47 +10,38 @@
             <form method="POST" action="{{ url_for('core.register_professional') }}" enctype="multipart/form-data">
                 {{ form.hidden_tag() }}
 
-                <!-- Full Name -->
                 <div class="form-floating mb-4">
                     {{ form.name(class="form-control", placeholder="Full Name", required="true") }}
                 </div>
 
-                <!-- Email Address -->
                 <div class="form-floating mb-4">
                     {{ form.email(class="form-control", placeholder="Email address", type="email", required="true") }}
                 </div>
 
-                <!-- Password -->
                 <div class="form-floating mb-4">
                     {{ form.password(class="form-control", placeholder="Password", required="true", minlength="6") }}
                 </div>
 
-                <!-- Confirm Password -->
                 <div class="form-floating mb-4">
                     {{ form.confirm_password(class="form-control", placeholder="Confirm Password", required="true", minlength="6", equalto="form.password") }}
                 </div>
 
-                <!-- Service Type -->
                 <div class="form-floating mb-4">
                     {{ form.service_type(class="form-control", placeholder="Service Type", required="true") }}
                 </div>
 
-                <!-- Experience -->
                 <div class="form-floating mb-4">
                     {{ form.experience(class="form-control", placeholder="Experience (in years)", required="true", type="number", min="0") }}
                 </div>
 
-                <!-- Document -->
                 <div class="form-floating mb-4">
                     {{ form.document(class="form-control", placeholder="Attach Documents (PDF only)", required="true", type="file", accept=".pdf") }}
                 </div>
 
-                <!-- Address -->
                 <div class="form-floating mb-4">
                     {{ form.address(class="form-control", placeholder="Address", required="true") }}
                 </div>
 
-                <!-- Pincode -->
                 <div class="form-floating mb-4">
                     {{ form.pincode(class="form-control", placeholder="Pincode", required="true", pattern="\d{6}") }}
                 </div>
