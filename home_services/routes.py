@@ -88,6 +88,9 @@ def register_customer():
                                    success_message=success_message)
         else:
             error_message = 'Registration Unsuccessful. Please check the form and try again.'
+            for field, errors in form.errors.items():
+                for error in errors:
+                    error_message += f" {field}: {error}"
     return render_template('register_customer.html', form=form, css_file="register.css",
                            error_message=error_message)
 
