@@ -308,6 +308,28 @@ def admin_dashboard():
     return render_template('admin_dashboard.html', services=services, professionals=professionals, service_requests=service_requests, show_search=show_search, search_results=search_results)
 
 
+@core.route('/admin_summary', methods=["GET"])
+@jwt_required(locations=["cookies"])
+def admin_summary():
+    reviews = ServiceRequest.query.with_entities(ServiceRequest.rating).all()
+    ratings = [review.rating for review in reviews if review.rating is not None]
+
+    rating_counts = [0, 0, 0, 0, 0]
+    for rating in ratings:
+        if 1 <= rating <= 5:
+            rating_counts[rating - 1] += 1
+
+    service_requests = ServiceRequest.query.all()
+    status_counts = {
+        'Assigned': sum(1 for service_requests in service_requests if service_requests.service_status == 'Assigned'),
+        'Completed': sum(1 for service_requests in service_requests if service_requests.service_status == 'Completed'),
+        'Pending': sum(1 for service_requests in service_requests if service_requests.service_status == 'Pending'),
+        'Cancelled': sum(1 for service_requests in service_requests if service_requests.service_status == 'Cancelled')
+    }
+
+    return render_template('admin_summary.html', rating_counts=rating_counts, status_counts=status_counts)
+
+
 @core.route('/add_service', methods=["POST"])
 @jwt_required(locations=["cookies"])
 def add_service():
