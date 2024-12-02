@@ -203,6 +203,35 @@ def customer_home():
                            packages=packages, search_results=search_results, show_search=show_search, css_file=None)
 
 
+@core.route('/customer_summary', methods=["GET"])
+@jwt_required(locations=["cookies"])
+def customer_summary():
+    user_id = get_jwt_identity()
+    customer = Customer.query.get(user_id)
+    if not customer:
+        return redirect(url_for('core.home'))
+
+    reviews = ServiceRequest.query.filter_by(customer_id=user_id).with_entities(ServiceRequest.rating).all()
+    ratings = [review.rating for review in reviews if review.rating is not None]
+
+    rating_counts = [0, 0, 0, 0, 0]
+    for rating in ratings:
+        if 1 <= rating <= 5:
+            rating_counts[rating - 1] += 1
+
+    service_requests = ServiceRequest.query.filter_by(customer_id=user_id).all()
+    status_counts = {
+        'Assigned': 0,
+        'Completed': 0,
+        'Pending': 0,
+        'Cancelled': 0
+    }
+    for request in service_requests:
+        status_counts[request.service_status] += 1
+
+    return render_template('customer_summary.html', rating_counts=rating_counts, status_counts=status_counts)
+
+
 @core.route('/professional_home', methods=["GET"])
 @jwt_required(locations=["cookies"])
 def professional_home():
