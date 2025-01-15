@@ -49,22 +49,39 @@ remarks, and rating
 
 
 ### API Design
+
 Authentication:
+
 ● /login (GET, POST): Handles user login and token generation.
+
 ● /logout (POST): Logs the user out by invalidating the token.
+
 ● /register_customer (GET, POST): Registers new customers.
+
 ● /register_professional (GET, POST): Registers new professionals with approval.
+
 Admin Actions:
+
 ● /approve_professional/<int:id> (POST): Approves a professional’s registration.
+
 ● /reject_professional/<int:id> (POST): Rejects a professional’s registration.
+
 ● /delete_professional/<int:id> (POST): Deletes a professional’s account.
+
 Customer Actions:
+
 ● /customer_home (GET, POST): Displays customer dashboard with service history and search.
+
 ● /customer_summary (GET): Shows customer ratings and service status.
+
 Professional Actions:
+
 ● /professional_home (GET): Displays professional dashboard with current and completed service
 requests.
+
 ● /professional_summary (GET): Shows professional ratings and service request summaries.
+
 Admin Dashboard:
+
 ● /admin_dashboard (GET, POST): Displays admin dashboard with search and manage options for
 service requests and users.
