@@ -2,8 +2,10 @@
 ## Modern Application Development - 1
 
 Author
+
 Rangan Ghosh
-22f******
+
+22f3000336
 
 I am a (B.S.-hopeful) Diploma student at IIT Madras, studying in the Data Science and Applications
 Program. I enjoy making solutions using code, and also freelance on the side. This project was an exciting
