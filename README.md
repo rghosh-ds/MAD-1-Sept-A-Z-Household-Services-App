@@ -7,7 +7,7 @@ Rangan Ghosh
 
 22f3000336
 
-I am a (B.S.-hopeful) Diploma student at IIT Madras, studying in the Data Science and Applications
+I am a B.S. Degree student at IIT Madras, studying in the Data Science and Applications
 Program. I enjoy making solutions using code, and also freelance on the side. This project was an exciting
 endeavour, and crossing the hurdles it presented to me was a massive growth factor.
 
